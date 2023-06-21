@@ -26,6 +26,5 @@ object SearchDialog {
 
     interface Listener {
     fun searchCity(cityName: String?)
-
     }
 }

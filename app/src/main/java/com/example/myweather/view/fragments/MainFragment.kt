@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.util.AttributeSet
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,7 +21,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.myweather.R
-import com.example.myweather.data.MainModel
+import com.example.myweather.models.Weather
 import com.example.myweather.databinding.FragmentMainBinding
 import com.example.myweather.utils.GpsDialog
 import com.example.myweather.utils.SearchDialog
@@ -35,8 +34,6 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.tabs.TabLayoutMediator
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 const val API_KEY = "99227bc267bb4ce8a9080001231402"
@@ -48,8 +45,6 @@ class MainFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val fragmentList = listOf<Fragment>(DayHoursFragment.newInstance(), NextDaysFragment.newInstance())
 
-
-    // Override Functions
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,10 +68,6 @@ class MainFragment : Fragment() {
         setMyLocationNow()
     }
 
-
-    // Observer and MainViewModel Functions.
-
-    // Return headModel from ViewModel And add data in HeadItem UserScreen
     private fun observerMainViewModel() = with(binding) {
         mainViewModel.currentLiveDataForHeadItem.observe(viewLifecycleOwner) {
 
@@ -92,8 +83,6 @@ class MainFragment : Fragment() {
         }
     }
 
-
-    // API Functions and Send DataModel in ViewModel
     private fun setRequestWeatherApi(city: String) {
         val url = "https://api.weatherapi.com/v1/forecast.json?key=" +
                 API_KEY +
@@ -115,17 +104,13 @@ class MainFragment : Fragment() {
 
     private fun parsingApi(response: String) {
         val fullJsonObject = JSONObject(response)
-
         val daysModelListForecast  = getForecastDaysModel(fullJsonObject)
-
          getModelHeadItem(fullJsonObject, daysModelListForecast[0])
     }
 
-    // dayModel from daysModelListForecast[0] - [0] position == currentDay. And send headModel in ViewModel
-    private fun getModelHeadItem(fullJsonObject: JSONObject, dayModel: MainModel) {
-
-        var currentTemp = fullJsonObject.getJSONObject("current").getString("temp_c")
-        val headModel = MainModel(
+    private fun getModelHeadItem(fullJsonObject: JSONObject, dayModel: Weather) {
+        val currentTemp = fullJsonObject.getJSONObject("current").getString("temp_c")
+        val headModel = Weather(
             fullJsonObject.getJSONObject("location").getString("name"),
             fullJsonObject.getJSONObject("current").getString("last_updated"),
             fullJsonObject.getJSONObject("current").getJSONObject("condition").getString("text"),
@@ -138,19 +123,16 @@ class MainFragment : Fragment() {
         mainViewModel.currentLiveDataForHeadItem.value =  headModel
     }
 
-    private fun getForecastDaysModel(fullJsonObject: JSONObject): List<MainModel> {
-        val dayModelList = ArrayList<MainModel>()
-
+    private fun getForecastDaysModel(fullJsonObject: JSONObject): List<Weather> {
+        val dayModelList = ArrayList<Weather>()
 
         val arrayForecastDays = fullJsonObject.getJSONObject("forecast").getJSONArray("forecastday")
         for(index in 0 until arrayForecastDays.length()) {
-
-            // One Forecast Day from Array - in "oneDayJsonObject" - является объектом на уровне представления Json.
             val oneDayJsonObject = arrayForecastDays[index] as JSONObject
-           val maxTemp = oneDayJsonObject.getJSONObject("day").getString("maxtemp_c")
+            val maxTemp = oneDayJsonObject.getJSONObject("day").getString("maxtemp_c")
             val minTemp = oneDayJsonObject.getJSONObject("day").getString("mintemp_c")
 
-            val dayModel = MainModel(
+            val dayModel = Weather(
                 fullJsonObject.getJSONObject("location").getString("name"),
                 oneDayJsonObject.getString("date"),
                 oneDayJsonObject.getJSONObject("day").getJSONObject("condition").getString("text"),
@@ -171,12 +153,9 @@ class MainFragment : Fragment() {
         return result.toString()
     }
 
-
-    // ViewPager Functions
     private fun initViewPager() {
-        var viewPagerAdapter = ViewPagerAdapter(activity as AppCompatActivity, fragmentList)
+        val viewPagerAdapter = ViewPagerAdapter(activity as AppCompatActivity, fragmentList)
             binding.viewPager.adapter = viewPagerAdapter
-
 
          val tabItemList = listOf(
             getString(R.string.tab_item_day_hours),
@@ -189,21 +168,16 @@ class MainFragment : Fragment() {
 
     }
 
-
-    // Search City Functions
     private fun onClickSearch(){
         binding.buttonSearch.setOnClickListener {
             SearchDialog.searchCityDialog(requireContext(), object : SearchDialog.Listener{
                 override fun searchCity(cityName: String?) {
                     cityName?.let { it1 -> setRequestWeatherApi(it1) }
                 }
-
             })
         }
     }
 
-
-    // GPS and Geolocation Functions
     private fun onClickUpdate(){
         binding.buttonUpdate.setOnClickListener {
             binding.tabLayout.selectTab(binding.tabLayout.getTabAt(0))
@@ -249,8 +223,6 @@ class MainFragment : Fragment() {
         fLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,cancellationToken.token).addOnCompleteListener { setRequestWeatherApi("${it.result.latitude},${it.result.longitude}") }
     }
 
-
-    // Permissions Functions
     private fun checkPresencePermissionUser() {
         if(!permissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
             checkResponseUserPermissionsDialog()
@@ -264,11 +236,8 @@ class MainFragment : Fragment() {
         }
     }
 
-
-    // Instance Fragment
     companion object {
         @JvmStatic
         fun newInstance() = MainFragment()
     }
-
 }

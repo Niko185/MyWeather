@@ -23,9 +23,7 @@ object GpsDialog  {
         dialog.show()
     }
 
-
     interface Clicker {
         fun transferUserGpsSettings()
     }
-
 }

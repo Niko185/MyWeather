@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.myweather.data.MainModel
+import com.example.myweather.models.Weather
 import com.example.myweather.databinding.FragmentDayHoursBinding
 import com.example.myweather.view.adapters.WeatherAdapter
 import com.example.myweather.vm.MainViewModel
@@ -19,7 +19,6 @@ class DayHoursFragment : Fragment() {
     private lateinit var myAdapter: WeatherAdapter
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    // Base Functions
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,15 +32,10 @@ class DayHoursFragment : Fragment() {
         initRecyclerView()
         observerMainViewModelAndAdapterRecyclerView()
     }
-
-    // Recycler View Functions
-
-    // Initialization rcView and his adapter
     private fun initRecyclerView() = with(binding) {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         myAdapter = WeatherAdapter(null)
         recyclerView.adapter = myAdapter
-
     }
 
     private fun observerMainViewModelAndAdapterRecyclerView() {
@@ -50,16 +44,14 @@ class DayHoursFragment : Fragment() {
         }
     }
 
-    // Форматруем String в Json чтобы можно было доставать данные из Json.(Достаем инфу по часам)
-    private fun getHoursListExtractArray(model: MainModel): List<MainModel> {
+    private fun getHoursListExtractArray(model: Weather): List<Weather> {
         val hoursArrayJson = JSONArray(model.hoursCurrentDay)
-        val hoursListExtractArray = ArrayList<MainModel>()
-
+        val hoursListExtractArray = ArrayList<Weather>()
 
         for(index in 0 until hoursArrayJson.length()) {
             var currentTemp = (hoursArrayJson[index] as JSONObject).getString("temp_c")
 
-            val hoursModel = MainModel(
+            val hoursModel = Weather(
                 "",
                 (hoursArrayJson[index] as JSONObject).getString("time"),
                 (hoursArrayJson[index] as JSONObject).getJSONObject("condition").getString("text"),
@@ -80,9 +72,7 @@ class DayHoursFragment : Fragment() {
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance() = DayHoursFragment()
-
     }
 }

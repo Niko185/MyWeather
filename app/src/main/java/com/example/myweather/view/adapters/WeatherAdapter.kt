@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myweather.R
-import com.example.myweather.data.MainModel
+import com.example.myweather.models.Weather
 
 import com.example.myweather.databinding.ItemPagerBinding
 import com.squareup.picasso.Picasso
 
 
-class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<MainModel, WeatherAdapter.ItemHolder>(ItemComparator()) {
+class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<Weather, WeatherAdapter.ItemHolder>(ItemComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_pager, parent, false)
@@ -26,7 +26,7 @@ class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<MainModel,
 
     class ItemHolder(view: View, val myClicking: MyClicking?) : RecyclerView.ViewHolder(view) {
         private val binding = ItemPagerBinding.bind(view)
-        var modelGlobalVariant: MainModel? = null
+        var modelGlobalVariant: Weather? = null
         init {
             itemView.setOnClickListener {
                 modelGlobalVariant?.let { it1 -> myClicking?.onClickItem(it1) }
@@ -35,9 +35,8 @@ class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<MainModel,
 
 
 
-        fun setData(model: MainModel) = with(binding) {
+        fun setData(model: Weather) = with(binding) {
             modelGlobalVariant = model
-
             val imageCondition = "https:${model.imageCondition}"
             val tempInterval = "${model.tempMin} / ${model.tempMax}"
 
@@ -45,23 +44,21 @@ class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<MainModel,
             textCondition.text = model.condition
             textInfo.text = model.tempCurrent.ifEmpty { tempInterval }
             Picasso.get().load(imageCondition).into(imageViewCondition)
-
-
         }
     }
 
-    class ItemComparator : DiffUtil.ItemCallback<MainModel>() {
-        override fun areItemsTheSame(oldItem: MainModel, newItem: MainModel): Boolean {
+    class ItemComparator : DiffUtil.ItemCallback<Weather>() {
+        override fun areItemsTheSame(oldItem: Weather, newItem: Weather): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: MainModel, newItem: MainModel): Boolean {
+        override fun areContentsTheSame(oldItem: Weather, newItem: Weather): Boolean {
            return oldItem == newItem
         }
 
     }
 
     interface MyClicking {
-       fun onClickItem(itemWithModel: MainModel)
+       fun onClickItem(itemWithModel: Weather)
     }
 }

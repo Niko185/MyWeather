@@ -1,8 +1,6 @@
-package com.example.myweather.data
+package com.example.myweather.models
 
-
-
-data class MainModel(
+data class Weather(
     val nameCity: String,
     val date: String,
     val condition: String,

@@ -13,5 +13,4 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity, private val list: Lis
     override fun createFragment(position: Int): Fragment {
         return list[position]
     }
-
 }
