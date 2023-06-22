@@ -13,6 +13,4 @@ Educational project.
 - Fragments
 - Google Play Services Location API
 - ViewModel & LiveData
-
-## Additional features
 - Picasso
