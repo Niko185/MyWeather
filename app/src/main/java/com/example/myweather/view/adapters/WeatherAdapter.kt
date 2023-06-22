@@ -42,7 +42,7 @@ class WeatherAdapter(val dataWithClicking: MyClicking?) : ListAdapter<Weather, W
 
             textData.text = model.date
             textCondition.text = model.condition
-            textInfo.text = model.tempCurrent.ifEmpty { tempInterval }
+            textInfo.text = "${model.tempCurrent.ifEmpty { tempInterval }}°C"
             Picasso.get().load(imageCondition).into(imageViewCondition)
         }
     }

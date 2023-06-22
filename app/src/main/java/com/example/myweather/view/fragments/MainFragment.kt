@@ -74,11 +74,11 @@ class MainFragment : Fragment() {
             val tempMinMax = "${it.tempMin} / ${it.tempMax}"
             val imageCondition = "https:${it.imageCondition}"
 
-            textMainTemperature.text = it.tempCurrent.ifEmpty { tempMinMax }
+            textMainTemperature.text = "${it.tempCurrent.ifEmpty { tempMinMax }}°C"
             textDayData.text = it.date
             textCity.text = it.nameCity
             textCondition.text = it.condition
-            textInterval.text = if(it.tempCurrent.isEmpty()) "" else tempMinMax
+            textInterval.text = "min/max temperature: ${if(it.tempCurrent.isEmpty()) "" else tempMinMax} °C"
             Picasso.get().load(imageCondition).into(imageViewCondition)
         }
     }
