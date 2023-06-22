@@ -9,6 +9,7 @@ Educational project.
 
 ## Technologies stack
 - Kotlin
+- Git
 - Volley
 - Fragments
 - Google Play Services Location API
